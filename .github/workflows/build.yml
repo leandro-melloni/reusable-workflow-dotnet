@@ -1,0 +1,45 @@
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'The version of the .NET Core SDK to use'
+        required: true
+        type: string
+      build-args:
+        description: 'Additional arguments to pass to the build command'
+        required: false
+        type: string
+      publish-args:
+        description: 'Additional arguments to pass to the publish command'
+        required: false
+        type: string
+      publish-dir:
+        description: 'The directory to publish to'
+        required: false
+        type: string
+      working-directory:
+        description: 'The directory to run the build and publish commands in'
+        required: false
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ inputs.version }}
+      - name: Build
+        run: dotnet build ${{ inputs.build-args }}
+        working-directory: ${{ inputs.working-directory }}
+      - name: Publish
+        run: dotnet publish ${{ inputs.publish-args }}
+        working-directory: ${{ inputs.working-directory }}
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: ${{ inputs.publish-dir }}
+          retention-days: 1
