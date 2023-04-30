@@ -35,17 +35,23 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ inputs.version }}
-      - name: Restore
-        run: dotnet restore ${{ inputs.restore-args }}
+      - name: dotnet aot
+        run: |
+          dotnet tool install -g Amazon.Lambda.Tools
+          dotnet new install Amazon.Lambda.Templates
+          dotnet lambda package
         working-directory: ${{ inputs.working-directory }}
-      - name: Build
-        run: dotnet build ${{ inputs.build-args }}
-        working-directory: ${{ inputs.working-directory }}
-      - name: Publish
-        run: dotnet publish ${{ inputs.publish-args }}
-        working-directory: ${{ inputs.working-directory }}
+#      - name: Restore
+#        run: dotnet restore ${{ inputs.restore-args }}
+#        working-directory: ${{ inputs.working-directory }}
+#      - name: Build
+#        run: dotnet build ${{ inputs.build-args }}
+#        working-directory: ${{ inputs.working-directory }}
+#      - name: Publish
+#        run: dotnet publish ${{ inputs.publish-args }}
+#        working-directory: ${{ inputs.working-directory }}
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: build
           path: ${{ inputs.publish-dir }}
